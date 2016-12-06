@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  div(class='container')
+    table(class='table')
+      thead
+        tr
+          th ID
+          th Created
+          th Cancel
+      tbody(data-bind='foreach: orders')
+        tr
+          td(data-bind='text: id')
+          td(data-bind='text: createdAt')
+          td
+            a(href='#', data-bind='click: $parent.cancelOrder') Cancel
+  script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-debug.js')
+  script(type='text/javascript').
+    var orders = !{JSON.stringify(orders)};
+    function OrderTableModel(orders) {
+      var self = this;
+      self.orders = ko.observableArray(orders);
+      self.cancelOrder = function() {
+        var order = this;
+        $.ajax({
+          type: 'DELETE',
+          url: '/orders/' + order.id,
+          success: function() {
+            self.orders.destroy(order);
+          },
+          error: function(e) {
+            alert('Unable to delete order.');
+          }
+        });
+      };
+    }
+    ko.applyBindings(new OrderTableModel(orders));

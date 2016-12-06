@@ -1,0 +1,65 @@
+extends layout
+
+block content
+  div(class='container')
+    div(class='jumbotron', style='margin-top: 30px')
+      h1= title
+      p Welcome to #{title}. The one and only place to buy my widgets.
+
+    p
+      a(href='#' data-bind='click: viewOrder, text: "View Order (" + order().length + ")"')
+
+    div(class="filters")
+      form
+        ul
+          each attr in attributes
+            li
+              select(name=attr.name, data-bind='event: {change: updateFilters}')
+                option(value='') Filter by #{attr.name}
+                each val in attr.values
+                  option(value=val) #{val}
+
+    div(class='widgets-container')
+      ul(class='widgets-list' data-bind='foreach: widgetTypes')
+        li(class='col-md-3')
+          h3()
+            a(href='#' data-bind='text: category, click: function() { $parent.displayWidgetType(this) }')
+          p(data-bind='text: description')
+
+    div(id='widgetTypeModal', class='modal', data-bind="with: currentWidgetType()")
+      div(class='modal-dialog')
+        div(class='modal-content')
+          div(class='modal-header')
+            h4(data-bind='text: category')
+          div(class='modal-body')
+            form(data-bind="foreach: attributes")
+              p
+                select(data-bind='attr: { name: name }, options: values, event: { change: $parent.attributesUpdated }')
+            p(data-bind='visible: !selectedWidget()')
+              em Selected Combination is out of stock.
+          div(class='modal-footer')
+            button(type: 'button', class='btn btn-default', data-dismiss='modal') Cancel
+            button(id='addToOrderButton' data-bind='click: $parent.addToOrder' type: 'button', class='btn btn-primary disabled') Add to Order
+
+    div(id='orderModal', class='modal')
+      div(class='modal-dialog')
+        div(class='modal-content')
+          div(class='modal-header')
+            h4 Order
+          div(class='modal-body')
+            div(data-bind='visible: order().length == 0') Your cart is empty.
+            ul(class='list-group' data-bind='foreach: order')
+              li(class='list-group-item')
+                div
+                  span(data-bind='text: category')
+                  a(href='#', class="remove", data-bind='click: function() { $parent.removeFromOrder(this) }') Remove
+                div(data-bind='text: attributeString')
+          div(class='modal-footer')
+            button(type: 'button', class='btn btn-default', data-dismiss='modal') Cancel
+            button(data-bind='click: placeOrder' type: 'button', class='btn btn-primary') Place Order
+
+  script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-debug.js')
+  script(type='text/javascript', src='/javascripts/index.js')
+  script(type='text/javascript').
+    var viewModel = new WidgetTypeListViewModel();
+    ko.applyBindings(viewModel);

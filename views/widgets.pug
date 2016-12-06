@@ -1,0 +1,45 @@
+extends layout
+
+block content
+  div(class='container')
+    table(class='table')
+      thead
+        tr
+          th Category
+          th Attributes
+          th Inventory
+          th Created
+      tbody(data-bind='foreach: widgets')
+        tr
+          td(data-bind='text: widget_type.category')
+          td
+            ul(class='attribute-list', data-bind='foreach: attribute_values')
+              li(data-bind='text: value')
+          td
+            input(data-bind='value: inventory')
+          td(data-bind='text: createdAt')
+          td
+            a(href='#', data-bind='click: $parent.updateInventory') Update Inventory
+  script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-debug.js')
+  script(type='text/javascript').
+    var widgets = !{JSON.stringify(widgets)};
+    function WidgetTableModel(widgets) {
+      var self = this;
+      self.widgets = ko.observableArray(widgets);
+      self.updateInventory = function() {
+        var widget = this;
+        $.ajax({
+          type: 'PATCH',
+          url: '/widgets/' + widget.id,
+          data: JSON.stringify({ inventory: widget.inventory }),
+          success: function() {
+
+          },
+          error: function(e) {
+            alert('Unable to update inventory: ' + e.responseText);
+          },
+          contentType: 'application/json'
+        });
+      };
+    }
+    ko.applyBindings(new WidgetTableModel(widgets));
