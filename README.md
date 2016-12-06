@@ -19,4 +19,9 @@ The UI is written in knockout.js, my first time using it, so any constructive cr
 * controllers are performing more work than they should
 * database design makes certain checks expensive
 * knockout.js newbie here, probably a lot of optimizations
+* database is expected on localhost
 * not tests :(
+
+## Deployment
+
+* npm start
