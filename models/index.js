@@ -1,5 +1,5 @@
 var Sequelize = require('sequelize');
-var sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/widget_factory');
+var sequelize = new Sequelize(process.env.DATABASE_URL);
 
 var WidgetType = exports.WidgetType = sequelize.define('widget_type', {
   category: {
